@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/applications")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "投递记录管理")
 @SecurityRequirement(name = "Bearer Authentication")
 public class JobApplicationController {

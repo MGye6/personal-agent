@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 
 import java.net.SocketTimeoutException;
 import java.util.UUID;
@@ -90,6 +92,77 @@ public class AiChatServiceImpl implements AiChatService {
                     .reply(errorMessage)
                     .conversationId(UUID.randomUUID().toString())
                     .build();
+        }
+    }
+
+    @Override
+    public void streamProcessNaturalLanguageQuery(String message, SseEmitter emitter) {
+        try {
+            log.info("Starting stream processing for message length: {}", message.length());
+            
+            // 使用 Spring AI 的流式 API
+            ChatClient chatClient = ChatClient.builder(chatModel)
+                    .defaultTools(companyTools, applicationTools, interviewRecordTools, interviewScheduleTools)
+                    .defaultSystem(SYSTEM_PROMPT)
+                    .build();
+
+            // 获取流式响应
+            Flux<String> flux = chatClient.prompt()
+                    .user(message)
+                    .stream()
+                    .content();
+
+            // 订阅流并逐块发送
+            flux.subscribe(
+                chunk -> {
+                    try {
+                        if (chunk != null && !chunk.isEmpty()) {
+                            emitter.send(SseEmitter.event()
+                                    .name("message")
+                                    .data(chunk));
+                            log.debug("Sent chunk of length: {}", chunk.length());
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to send chunk", e);
+                    }
+                },
+                error -> {
+                    log.error("Stream error", error);
+                    try {
+                        emitter.send(SseEmitter.event()
+                                .name("error")
+                                .data("{\"error\": \"AI服务错误\"}"));
+                    } catch (Exception e) {
+                        log.error("Failed to send error message", e);
+                    }
+                    emitter.completeWithError(error);
+                },
+                () -> {
+                    log.info("Stream completed successfully");
+                    emitter.complete();
+                }
+            );
+            
+        } catch (Exception e) {
+            log.error("Stream processing error", e);
+            try {
+                String errorMessage;
+                if (e.getCause() instanceof SocketTimeoutException || 
+                    (e.getMessage() != null && e.getMessage().contains("timeout"))) {
+                    errorMessage = "AI服务响应超时，请稍后再试。";
+                } else if (e.getMessage() != null && e.getMessage().contains("Connection refused")) {
+                    errorMessage = "无法连接到AI服务，请检查网络后重试。";
+                } else {
+                    errorMessage = "抱歉，AI服务暂时不可用，请稍后再试。";
+                }
+                
+                emitter.send(SseEmitter.event()
+                        .name("error")
+                        .data("{\"error\": \"" + errorMessage + "\"}"));
+            } catch (Exception ex) {
+                log.error("Failed to send error message", ex);
+            }
+            emitter.completeWithError(e);
         }
     }
 }

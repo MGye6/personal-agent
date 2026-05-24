@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class LangFuseConfig {
 
-    @Value("${spring.ai.observation.langfuse.endpoint}")
+    @Value("${langfuse.base-url}")
     private String endpoint;
 
-    @Value("${spring.ai.observation.langfuse.secret-key}")
+    @Value("${langfuse.secret-key}")
     private String secretKey;
 
-    @Value("${spring.ai.observation.langfuse.public-key}")
+    @Value("${langfuse.public-key}")
     private String publicKey;
 }

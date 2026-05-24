@@ -16,25 +16,58 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'Layout',
       component: () => import('@/components/Layout.vue'),
       meta: { requiresAuth: true },
       children: [
-        { path: '', redirect: '/dashboard' },
-        { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/Dashboard.vue') },
-        { path: 'companies', name: 'Companies', component: () => import('@/views/Companies.vue') },
-        { path: 'applications', name: 'Applications', component: () => import('@/views/Applications.vue') },
-        { path: 'interview-records', name: 'InterviewRecords', component: () => import('@/views/InterviewRecords.vue') },
-        { path: 'interview-schedules', name: 'InterviewSchedules', component: () => import('@/views/InterviewSchedules.vue') },
-        { path: 'ai-chat', name: 'AIChat', component: () => import('@/views/AIChat.vue') }
+        {
+          path: '',
+          redirect: '/dashboard'
+        },
+        {
+          path: 'dashboard',
+          name: 'Dashboard',
+          component: () => import('@/views/Dashboard.vue')
+        },
+        {
+          path: 'companies',
+          name: 'Companies',
+          component: () => import('@/views/Companies.vue')
+        },
+        {
+          path: 'applications',
+          name: 'Applications',
+          component: () => import('@/views/Applications.vue')
+        },
+        {
+          path: 'interview-records',
+          name: 'InterviewRecords',
+          component: () => import('@/views/InterviewRecords.vue')
+        },
+        {
+          path: 'interview-schedules',
+          name: 'InterviewSchedules',
+          component: () => import('@/views/InterviewSchedules.vue')
+        },
+        {
+          path: 'ai-chat',
+          name: 'AIChat',
+          component: () => import('@/views/AIChat.vue')
+        }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/login'
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    next('/dashboard')
+  } else if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
   } else {
     next()

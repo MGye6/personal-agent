@@ -22,11 +22,25 @@ public class CustomUserDetails implements UserDetails {
     private final Role role;
     private final boolean enabled;
 
+    /**
+     * 从数据库用户实体创建（用于登录时）
+     */
     public CustomUserDetails(User user) {
         this.id = user.getId();
-        this.username = user.getUsername();  // 使用实际的 username
+        this.username = user.getUsername();
         this.password = user.getPassword();
         this.role = user.getRole() != null ? user.getRole() : Role.USER;
+        this.enabled = true;
+    }
+
+    /**
+     * 从JWT中提取的信息创建（用于认证时，避免查询数据库）
+     */
+    public CustomUserDetails(Long id, String username, String roleStr) {
+        this.id = id;
+        this.username = username;
+        this.password = null;  // JWT中不包含密码
+        this.role = roleStr != null ? Role.fromString(roleStr) : Role.USER;
         this.enabled = true;
     }
 

@@ -26,7 +26,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "统计信息")
 @SecurityRequirement(name = "Bearer Authentication")
 public class DashboardController {

@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/interview-schedules")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "面试安排")
 @SecurityRequirement(name = "Bearer Authentication")
 public class InterviewScheduleController {

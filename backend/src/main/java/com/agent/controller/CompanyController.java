@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/companies")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "公司管理", description = "公司信息管理接口")
 @SecurityRequirement(name = "Bearer Authentication")
 public class CompanyController {

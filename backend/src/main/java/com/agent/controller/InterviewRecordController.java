@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/interview-records")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "面试记录")
 @SecurityRequirement(name = "Bearer Authentication")
 public class InterviewRecordController {

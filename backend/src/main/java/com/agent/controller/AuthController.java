@@ -31,4 +31,15 @@ public class AuthController {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "刷新Token", description = "使用当前有效Token生成新的Token（包含最新的角色信息）")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().build();
+        }
+        String oldToken = authorizationHeader.substring(7);
+        AuthResponse response = authService.refreshToken(oldToken);
+        return ResponseEntity.ok(response);
+    }
 }
