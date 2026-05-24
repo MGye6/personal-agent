@@ -1,0 +1,70 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Backend - Maven
+backend/target/
+backend/build/
+backend/*.jar
+backend/*.war
+backend/*.ear
+
+# Backend - Gradle
+backend/.gradle/
+backend/build/
+!backend/build/reports/
+!backend/build/test-results/
+
+# Frontend - Build outputs
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/node_modules/
+
+# Frontend - Package files (可选，如果你不想提交依赖锁文件)
+# frontend/package-lock.json
+# frontend/yarn.lock
+# frontend/pnpm-lock.yaml
+
+# Logs
+*.log
+logs/
+application.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment files (敏感配置)
+.env
+.env.local
+.env.*.local
+application-local.yml
+application-dev.yml
+application-prod.yml
+
+# Database files
+*.db
+*.sqlite
+*.rdb
+*.aof
+
+# Test reports
+*.test-reports/
+coverage/
+.nyc_output/
+
+# Docker
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
