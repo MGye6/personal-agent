@@ -15,6 +15,7 @@ const menuItems = [
   { key: '/applications', title: '投递记录' },
   { key: '/interview-records', title: '面试记录' },
   { key: '/interview-schedules', title: '面试日程' },
+  { key: '/resume', title: '简历管理' },
   { key: '/ai-chat', title: 'AI助手' }
 ]
 

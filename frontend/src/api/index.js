@@ -51,3 +51,10 @@ export const chatAPI = {
   chat: (message) => api.post('/chat/query', null, { params: { message } }),
   chatStream: (message) => `/api/chat/stream?message=${encodeURIComponent(message)}`
 }
+
+export const resumeAPI = {
+  getMyResume: () => api.get('/resumes/my'),
+  create: (data) => api.post('/resumes', data),
+  update: (id, data) => api.put(`/resumes/${id}`, data),
+  exportPdf: (id) => `/api/resumes/${id}/export/pdf`
+}

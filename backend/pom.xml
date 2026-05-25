@@ -158,6 +158,13 @@
             <version>1.1.2.2</version>
         </dependency>
 
+        <!-- iText PDF -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext-asian</artifactId>
+            <version>5.2.0</version>
+        </dependency>
+
     </dependencies>
 
 

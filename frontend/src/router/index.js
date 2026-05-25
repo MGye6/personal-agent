@@ -52,6 +52,11 @@ const router = createRouter({
           path: 'ai-chat',
           name: 'AIChat',
           component: () => import('@/views/AIChat.vue')
+        },
+        {
+          path: 'resume',
+          name: 'Resume',
+          component: () => import('@/views/Resume.vue')
         }
       ]
     },
