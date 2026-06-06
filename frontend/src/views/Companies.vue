@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElDialog, ElButton, ElInput, ElTable, ElTableColumn, ElTextarea } from 'element-plus'
+import { ElMessage, ElDialog, ElButton, ElInput, ElTable, ElTableColumn } from 'element-plus'
 import { companyAPI } from '@/api'
 
 const data = ref([])

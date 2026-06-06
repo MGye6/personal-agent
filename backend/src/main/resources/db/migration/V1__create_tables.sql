@@ -5,13 +5,14 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100),
     phone VARCHAR(20),
-    role VARCHAR(20) DEFAULT 'USER' COMMENT 'USER-普通用户, ADMIN-管理员',
+    role VARCHAR(20) DEFAULT 'USER',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,
-    INDEX idx_username (username),
-    INDEX idx_role (role)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+    deleted TINYINT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_role ON users(role);
 
 -- 创建公司表
 CREATE TABLE IF NOT EXISTS companies (
@@ -23,19 +24,20 @@ CREATE TABLE IF NOT EXISTS companies (
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT DEFAULT 0,
-    INDEX idx_name (name),
-    INDEX idx_industry (industry)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='公司表';
+    deleted TINYINT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_companies_name ON companies(name);
+CREATE INDEX idx_companies_industry ON companies(industry);
 
 -- 创建投递记录表
 CREATE TABLE IF NOT EXISTS job_applications (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL COMMENT '用户ID',
-    company_id BIGINT NOT NULL COMMENT '公司ID',
+    user_id BIGINT NOT NULL,
+    company_id BIGINT NOT NULL,
     position VARCHAR(200),
     department VARCHAR(100),
-    status VARCHAR(50) DEFAULT 'APPLIED' COMMENT 'APPLIED-已投递, SCREENING-筛选中, INTERVIEWING-面试中, OFFER-已发offer, REJECTED-已拒绝, WITHDRAWN-已撤回',
+    status VARCHAR(50) DEFAULT 'APPLIED',
     application_date DATE,
     job_description TEXT,
     salary_range VARCHAR(100),
@@ -44,57 +46,60 @@ CREATE TABLE IF NOT EXISTS job_applications (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
-    INDEX idx_user_id (user_id),
-    INDEX idx_company_id (company_id),
-    INDEX idx_status (status),
-    INDEX idx_application_date (application_date),
     FOREIGN KEY (company_id) REFERENCES companies(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='投递记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_ja_user_id ON job_applications(user_id);
+CREATE INDEX idx_ja_company_id ON job_applications(company_id);
+CREATE INDEX idx_ja_status ON job_applications(status);
+CREATE INDEX idx_ja_application_date ON job_applications(application_date);
 
 -- 创建面试记录表
 CREATE TABLE IF NOT EXISTS interview_records (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL COMMENT '用户ID',
-    job_application_id BIGINT NOT NULL COMMENT '投递记录ID',
-    round INT COMMENT '面试轮次',
-    interview_type VARCHAR(50) COMMENT 'PHONE-电话面试, VIDEO-视频面试, ONSITE-现场面试, HR-HR面试, TECHNICAL-技术面试, GROUP-群面, FINAL-终面',
+    user_id BIGINT NOT NULL,
+    job_application_id BIGINT NOT NULL,
+    round INT,
+    interview_type VARCHAR(50),
     interview_time DATETIME,
-    duration_minutes INT COMMENT '面试时长（分钟）',
-    interviewer VARCHAR(100) COMMENT '面试官',
-    result VARCHAR(50) COMMENT 'PENDING-待定, PASSED-通过, FAILED-未通过, CANCELLED-已取消',
+    duration_minutes INT,
+    interviewer VARCHAR(100),
+    result VARCHAR(50),
     feedback TEXT,
-    questions_asked TEXT COMMENT '被问到的问题',
-    my_performance TEXT COMMENT '我的表现',
+    questions_asked TEXT,
+    my_performance TEXT,
     notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
-    INDEX idx_user_id (user_id),
-    INDEX idx_application_id (job_application_id),
-    INDEX idx_result (result),
     FOREIGN KEY (job_application_id) REFERENCES job_applications(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='面试记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_ir_user_id ON interview_records(user_id);
+CREATE INDEX idx_ir_application_id ON interview_records(job_application_id);
+CREATE INDEX idx_ir_result ON interview_records(result);
 
 -- 创建面试安排表
 CREATE TABLE IF NOT EXISTS interview_schedules (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL COMMENT '用户ID',
-    job_application_id BIGINT NOT NULL COMMENT '投递记录ID',
+    user_id BIGINT NOT NULL,
+    job_application_id BIGINT NOT NULL,
     title VARCHAR(200) NOT NULL,
     description TEXT,
     start_time DATETIME NOT NULL,
     end_time DATETIME,
-    interview_type VARCHAR(50) COMMENT '面试类型',
+    interview_type VARCHAR(50),
     location VARCHAR(200),
-    meeting_link VARCHAR(500) COMMENT '会议链接',
-    reminder_minutes_before INT DEFAULT 30 COMMENT '提前提醒分钟数',
-    status VARCHAR(50) DEFAULT 'SCHEDULED' COMMENT 'SCHEDULED-已安排, COMPLETED-已完成, CANCELLED-已取消, POSTPONED-已延期',
+    meeting_link VARCHAR(500),
+    reminder_minutes_before INT DEFAULT 30,
+    status VARCHAR(50) DEFAULT 'SCHEDULED',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT DEFAULT 0,
-    INDEX idx_user_id (user_id),
-    INDEX idx_application_id (job_application_id),
-    INDEX idx_start_time (start_time),
-    INDEX idx_status (status),
     FOREIGN KEY (job_application_id) REFERENCES job_applications(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='面试安排表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_is_user_id ON interview_schedules(user_id);
+CREATE INDEX idx_is_application_id ON interview_schedules(job_application_id);
+CREATE INDEX idx_is_start_time ON interview_schedules(start_time);
+CREATE INDEX idx_is_status ON interview_schedules(status);

@@ -76,7 +76,10 @@ public class JwtUtils {
         Claims claims = parseToken(token);
         // 优先从自定义 claim 获取，兼容旧格式
         if (claims.containsKey(CLAIM_USER_ID)) {
-            return claims.get(CLAIM_USER_ID, Long.class);
+            Object value = claims.get(CLAIM_USER_ID);
+            if (value instanceof Number) {
+                return ((Number) value).longValue();
+            }
         }
         return Long.parseLong(claims.getSubject());
     }

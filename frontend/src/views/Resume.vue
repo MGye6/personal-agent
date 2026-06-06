@@ -2,6 +2,9 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElButton, ElInput, ElCard, ElRow, ElCol, ElTabs, ElTabPane } from 'element-plus'
 import { resumeAPI } from '@/api'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const resume = ref({
   title: '我的简历',
@@ -18,6 +21,7 @@ const resume = ref({
 })
 const loading = ref(false)
 const previewMode = ref(false)
+const activeTab = ref('basic')
 
 const loadResume = async () => {
   loading.value = true
@@ -60,16 +64,28 @@ const exportPdf = async () => {
     return
   }
   try {
-    const url = resumeAPI.exportPdf(resume.value.id)
+    const url = `/api/resumes/${resume.value.id}/export/pdf`
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${authStore.token}`
+      }
+    })
+    if (!response.ok) {
+      throw new Error('导出失败')
+    }
+    const blob = await response.blob()
+    const downloadUrl = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    link.href = url
+    link.href = downloadUrl
     const filename = resume.value.name ? `${resume.value.name}_简历.pdf` : '简历.pdf'
     link.download = filename
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    URL.revokeObjectURL(downloadUrl)
     ElMessage.success('导出成功')
   } catch (error) {
+    console.error('PDF导出失败:', error)
     ElMessage.error('导出失败')
   }
 }
@@ -281,13 +297,3 @@ onMounted(loadResume)
     </ElCard>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      activeTab: 'basic'
-    }
-  }
-}
-</script>

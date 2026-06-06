@@ -24,7 +24,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public Resume getMyResume() {
-        Long userId = UserContext.getCurrentUserId();
+        Long userId = UserContext.getUserId();
         LambdaQueryWrapper<Resume> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Resume::getUserId, userId)
                 .eq(Resume::getDeleted, 0)
@@ -45,7 +45,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public Resume createResume(Resume resume) {
-        Long userId = UserContext.getCurrentUserId();
+        Long userId = UserContext.getUserId();
         resume.setUserId(userId);
         resume.setCreatedAt(LocalDateTime.now());
         resume.setUpdatedAt(LocalDateTime.now());
@@ -55,7 +55,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public Resume updateResume(Resume resume) {
-        Long userId = UserContext.getCurrentUserId();
+        Long userId = UserContext.getUserId();
         resume.setUserId(userId);
         resume.setUpdatedAt(LocalDateTime.now());
         resumeMapper.updateById(resume);
